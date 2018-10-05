@@ -1,0 +1,45 @@
+Step 1:First Create an Account in google cloud storage For that you will need credit card details but it won't charge, when we were not gooing for "Upgrade" because this is to make sure that it is not Robot.
+Step 2:Create a Project in google cloud storage, here for example Project Name is "My-project".
+Step 3: Create a Bucket in the Project "My-project". for example here i created "My-buckets"
+Step 4: Create a Folder in the bucket for example here i created a folder name "avatars".
+##Step 5: Go to the optinon IAM & Admin => Service accounts => Create Service account => Put Service Account name should ne the Bucket name "my-buckets".=> Check Furnish a new private key and save then a new json file will download and put that file in the project.Here i rename it as my-buckets.json.
+                      Go to The Project in xampp
+Step 6: Go to the userController.php
+[app->http->controllers->api->v2->userController.php]
+
+ $me = Auth::user();
+ $file = $request->file('avatar');
+ $name= $me->uuid . ".".$file->getClientOriginalExtension();
+ $filePath = 'avatars/' . $name;
+ $disk = Storage::disk('gcs')->put($filePath, file_get_contents($file));
+ $gcs = Storage::disk('gcs');
+ $url = $gcs->url('avatars'. "/" . $me->uuid . ".jpg");
+ $me->avatar = $url;
+ $me->save();
+return $this->prepareItem($me);
+}
+
+Step 7: Go to the filesystems.php
+[config->filesystems.php] Set a driver for the google cloud
+
+'gcs' => [
+         'driver' => 'gcs',
+         'project_id' => env('GOOGLE_CLOUD_PROJECT_ID', 'my-project-209405'),
+         'key_file' => env('GOOGLE_APPLICATION_CREDENTIALS', './my-buckets.json'), // optional: /path/to/service-account.json
+         'bucket' => env('GOOGLE_CLOUD_STORAGE_BUCKET', 'my-buckets'),
+         'path_prefix' => env('GOOGLE_CLOUD_STORAGE_PATH_PREFIX', null), // optional: /default/path/to/apply/in/bucket
+         'storage_api_uri' => env('GOOGLE_CLOUD_STORAGE_API_URI', 'https://storage.googleapis.com/my-buckets/'), // see: Public URLs below
+],
+
+Add the Path Of my-buckets.json we got at Step 5 to the Key_file
+
+step 8: Dowload Google SDK Console
+Url - https://cloud.google.com/sdk/
+
+step 9: First we dont have the Access to the Account which the google cloud is created ,To get access we need to run google cloud command in google SDK console
+Run : gcloud auth login Then it will open the brouser a asking the gmail account which we created the google cloud storage and allow the permission for google sdk to access, Then it will show the current project that we are, in the console.
+
+step 10: Run the command to enable the public accessibility of the object. The URL that we are getting and stored in the database is not having publicly access
+Run : gsutil iam ch allUsers:objectViewer gs://my-buckets
+
+Hope You can Upload your file from the project to the Cloud Storage Thank You
