@@ -43,3 +43,5 @@ step 10: Run the command to enable the public accessibility of the object. The U
 Run : gsutil iam ch allUsers:objectViewer gs://my-buckets
 
 Hope You can Upload your file from the project to the Cloud Storage Thank You
+
+https://packagist.org/packages/superbalist/laravel-google-cloud-storage
